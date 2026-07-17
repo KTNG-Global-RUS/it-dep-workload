@@ -66,6 +66,12 @@ header h1{font-size:13.5px;font-weight:600;flex:1;white-space:nowrap;overflow:hi
 .edit-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12px;opacity:0;padding:2px 4px;border-radius:4px;transition:opacity .15s;color:#64748b;line-height:1}
 .edit-active .pc-card:hover .edit-btn{opacity:1}
 .edit-btn:hover{background:#fef3c7;color:#b45309}
+.card-act-btns{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.edit-active .pc-card:hover .card-act-btns{opacity:1}
+.card-act-btn{background:none;border:none;cursor:pointer;font-size:12px;padding:3px 5px;border-radius:4px;color:#94a3b8;line-height:1;transition:all .12s}
+.card-act-btn:hover{background:#fef3c7;color:#b45309}
+.card-act-del:hover{background:#fee2e2!important;color:#dc2626!important}
+.edit-active .pc-cnt{display:none!important}
 .card-edit{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;border:1.5px solid #fbbf24;background:#fffbeb;margin-bottom:3px}
 .card-edit-fields{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
 .card-edit input,.card-edit select{border:1px solid #d1d5db;border-radius:4px;padding:3px 6px;font-size:11.5px;color:var(--txt);outline:none;width:100%;font-family:'Segoe UI',Arial,sans-serif;background:#fff}
@@ -680,7 +686,7 @@ function makeCard(p,side,team){
   const color=(team||teamOf(p.teamId,side)).c;
   const d=document.createElement('div');d.className='pc-card';d.id='card-'+p.id;
   if(editMode){d.setAttribute('draggable','true');d.addEventListener('dragstart',e=>{dragPid=p.id;dragSide=side;d.classList.add('dragging');e.dataTransfer.effectAllowed='move';});d.addEventListener('dragend',()=>{d.classList.remove('dragging');dragPid=null;dragSide=null;});}
-  d.innerHTML=`<div class="av" style="background:${color}">${ini(p.name)}</div><div style="min-width:0;flex:1"><div class="pn">${p.name}</div><div class="pr">${p.role}</div></div><div class="pc-cnt" id="cnt-${p.id}"></div>${editMode?`<button class="edit-btn" onclick="event.stopPropagation();editCard('${p.id}','${side}')">✏</button>`:''}`;
+  d.innerHTML=`<div class="av" style="background:${color}">${ini(p.name)}</div><div style="min-width:0;flex:1"><div class="pn">${p.name}</div><div class="pr">${p.role}</div></div><div class="pc-cnt" id="cnt-${p.id}"></div>${editMode?`<div class="card-act-btns"><button class="card-act-btn" onclick="event.stopPropagation();editCard('${p.id}','${side}')" title="Редактировать">✏</button><button class="card-act-btn card-act-del" onclick="event.stopPropagation();deletePerson('${p.id}','${side}')" title="Удалить сотрудника">🗑</button></div>`:''}`;
   if(!editMode)d.onclick=()=>onCard(p,side);
   return d;
 }
@@ -760,6 +766,22 @@ function saveCard(pid,side){
   renderCol(side);fillSelects();refresh();
 }
 function cancelCard(pid,side){renderCol(side);refresh();}
+
+function deletePerson(pid, side) {
+  const ppl = getPpl(side);
+  const p = ppl.find(x => x.id === pid);
+  if (!p) return;
+  const affected = conns.filter(c => c.fromId === pid || c.toId === pid);
+  if (affected.length > 0) {
+    const word = affected.length === 1 ? 'обращение' : affected.length < 5 ? 'обращения' : 'обращений';
+    if (!confirm(`Удалить «${p.name}»?\nВместе с ним будут удалены ${affected.length} ${word}.`)) return;
+    conns = conns.filter(c => c.fromId !== pid && c.toId !== pid);
+  }
+  const idx = ppl.findIndex(x => x.id === pid);
+  if (idx !== -1) ppl.splice(idx, 1);
+  renderCol(side); fillSelects(); refresh();
+  toast(`🗑 ${p.name} удалён`);
+}
 
 // ════════════════════════════════════════════
 //  DRAG & DROP
