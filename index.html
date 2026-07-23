@@ -142,15 +142,6 @@ header h1{font-size:13.5px;font-weight:600;flex:1;white-space:nowrap;overflow:hi
 .modal p{font-size:13px;color:var(--mut);margin-bottom:12px;line-height:1.6}.modal select{width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:6px}
 .mbtn{padding:8px 18px;border:none;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600}.mbtn-ok{background:var(--a);color:#fff}.mbtn-cancel{background:#f1f5f9;color:var(--mut)}.mbtn-danger{background:#fee2e2;color:#991b1b}
 .setup-step{display:flex;gap:12px;margin-bottom:16px}.step-num{width:24px;height:24px;border-radius:50%;background:var(--a);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.step-body{flex:1}.step-body strong{font-size:13px}.step-body p{font-size:12px;margin:3px 0}.code-block{font-family:monospace;font-size:11px;background:#f8fafc;border:1px solid var(--brd);border-radius:6px;padding:10px 12px;margin:8px 0;white-space:pre-wrap}.alert-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;line-height:1.6;margin-bottom:14px}.alert-box.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}
-
-/* POLISHED OVERVIEW */
-.canvas-guide{position:absolute;inset:0;pointer-events:none;z-index:1}.canvas-guide:before,.canvas-guide:after{content:"";position:absolute;top:50px;bottom:20px;width:1px;background:linear-gradient(transparent,#d9e4f0 12%,#d9e4f0 88%,transparent)}.canvas-guide:before{left:29%}.canvas-guide:after{right:29%}
-.stage-label{position:absolute;top:11px;z-index:4;font-size:9px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:#94a3b8;background:rgba(248,250,253,.94);padding:4px 9px;border-radius:12px;border:1px solid #e5edf5;pointer-events:none}.stage-label.in{left:14%;transform:translateX(-50%)}.stage-label.tasks{left:50%;transform:translateX(-50%);color:#475569;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.06)}.stage-label.out{right:14%;transform:translateX(50%)}
-.canvas-summary{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:4;padding:5px 10px;background:rgba(255,255,255,.94);border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 5px 18px rgba(15,23,42,.07);font-size:10px;color:#64748b;pointer-events:none;white-space:nowrap}.canvas-summary b{color:#1e293b}
-.sa{background:#f8fafc;background-image:radial-gradient(circle at 1px 1px,#dce6f1 1px,transparent 0);background-size:24px 24px}
-.flow-trunk{fill:none;stroke:#b8c7d9;stroke-linecap:round;stroke-linejoin:round;opacity:.42}.flow-branch{fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.56;transition:.14s}.flow-active{opacity:1!important;stroke-width:3.4!important}.flow-bundle{fill:#fff;stroke:#aebed1;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(15,23,42,.10))}.flow-bundle-count{font-size:8.5px;font-weight:800;fill:#475569;text-anchor:middle;pointer-events:none}.bundle-label{font-size:8px;font-weight:750;fill:#94a3b8;pointer-events:none}
-.task-card-svg{cursor:pointer;filter:drop-shadow(0 4px 8px rgba(15,23,42,.10))}.task-card-bg{fill:#fff;stroke:#dbe5ef;stroke-width:1.2;transition:.14s}.task-card-svg:hover .task-card-bg{stroke:#60a5fa;stroke-width:1.8}.task-card-title{font-size:10px;font-weight:650;fill:#1e293b;pointer-events:none}.task-card-meta{font-size:8px;font-weight:600;fill:#94a3b8;pointer-events:none}.task-card-index{font-size:8.5px;font-weight:800;fill:#fff;pointer-events:none}.task-card-prio{font-size:7px;font-weight:800;pointer-events:none}
-
 @media print{.hbtn,.bot,.filter-panel{display:none!important}.dg{height:calc(100vh - var(--hh))!important}}
 </style>
 </head>
@@ -171,11 +162,6 @@ header h1{font-size:13.5px;font-weight:600;flex:1;white-space:nowrap;overflow:hi
 <div class="dg" id="dg">
   <div class="pc" id="sdCol"><div class="ct">Sales Development</div></div>
   <div class="sa">
-    <div class="canvas-guide"></div>
-    <div class="stage-label in">Источник</div>
-    <div class="stage-label tasks">Задачи</div>
-    <div class="stage-label out">Исполнитель</div>
-    <div class="canvas-summary" id="canvasSummary">Нажмите на сотрудника для фильтра</div>
     <div class="filter-panel hidden" id="filterPanel"><span class="filter-label" id="filterLabel"></span><button class="filter-clear" onclick="clearPersonFilter()">Сбросить</button></div>
     <svg id="svgL" xmlns="http://www.w3.org/2000/svg"><defs id="svgD"></defs><g id="svgG"></g></svg>
     <div class="hint" id="hint"><b>1</b>Выберите отправителя слева<br><b>2</b>Выберите исполнителя справа<br><b>3</b>Добавьте задачу внизу<br><span style="font-size:11px">Клик по человеку также включает фильтр</span></div>
@@ -330,25 +316,94 @@ function buildRow(c,num,done){const f=SD.find(p=>p.id===c.fromId),t=IT.find(p=>p
 function cardPos(id,side){const c=document.getElementById('card-'+id),s=document.getElementById('svgL');if(!c||!s)return null;const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect(),col=c.closest('.pc').getBoundingClientRect();if(cr.bottom<col.top||cr.top>col.bottom)return null;return{x:side==='sd'?0:sr.width,y:cr.top+cr.height/2-sr.top}}
 function svgEl(n,a={}){const e=document.createElementNS('http://www.w3.org/2000/svg',n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e}
 function drawLines(){
- const D=document.getElementById('svgD'),G=document.getElementById('svgG'),svg=document.getElementById('svgL');D.innerHTML='';G.innerHTML='';
- const cs=getFilteredConnections(false),box=svg.getBoundingClientRect(),w=box.width,h=box.height,summary=document.getElementById('canvasSummary');
- if(summary){const sn=new Set(cs.map(c=>c.fromId)).size,tn=new Set(cs.map(c=>c.toId)).size;summary.innerHTML=isFilterActive()?`<b>${cs.length}</b> задач по фильтру · Esc — сбросить`:`<b>${cs.length}</b> активных задач · ${sn} отправителей · ${tn} исполнителей`}
- if(!cs.length){const t=svgEl('text',{x:w/2,y:h/2,class:'svg-empty-filter'});t.textContent=isFilterActive()?'У выбранного сотрудника нет активных обращений':'Добавьте первое обращение';G.appendChild(t);return}
- const lx=Math.max(110,w*.28),tx=w*.5,rx=Math.min(w-110,w*.72),top=54,bottom=48,cardH=34,gap=8;
- const sorted=[...cs].sort((a,b)=>(cardPos(a.fromId,'sd')?.y||0)-(cardPos(b.fromId,'sd')?.y||0)||((cardPos(a.toId,'it')?.y||0)-(cardPos(b.toId,'it')?.y||0)));
- const total=sorted.length*cardH+(sorted.length-1)*gap,start=Math.max(top,(h-total)/2),lane=new Map;sorted.forEach((c,i)=>lane.set(c.id,start+i*(cardH+gap)+cardH/2));
- const sg={},tg={};cs.forEach(c=>{(sg[c.fromId]??=[]).push(c);(tg[c.toId]??=[]).push(c)});const sy={},ty={};Object.entries(sg).forEach(([id,a])=>sy[id]=a.reduce((z,c)=>z+lane.get(c.id),0)/a.length);Object.entries(tg).forEach(([id,a])=>ty[id]=a.reduce((z,c)=>z+lane.get(c.id),0)/a.length);
- Object.entries(sg).forEach(([id,a])=>{const p=cardPos(id,'sd');if(!p)return;G.appendChild(svgEl('path',{d:`M3,${p.y} C${lx*.48},${p.y} ${lx*.48},${sy[id]} ${lx},${sy[id]}`,class:'flow-trunk','stroke-width':Math.min(7,2.5+a.length*.42),'data-person-id':id}));drawBundleNice(G,lx,sy[id],a.length,'left')});
- Object.entries(tg).forEach(([id,a])=>{const p=cardPos(id,'it');if(!p)return;const cx=rx+(w-rx)*.52;G.appendChild(svgEl('path',{d:`M${rx},${ty[id]} C${cx},${ty[id]} ${cx},${p.y} ${w-4},${p.y}`,class:'flow-trunk','stroke-width':Math.min(7,2.5+a.length*.42),'data-person-id':id}));drawBundleNice(G,rx,ty[id],a.length,'right')});
- sorted.forEach((c,i)=>{const y=lane.get(c.id),pr=c.priority?PRIORITIES[c.priority]:null,accent=pr?.color||'#3b82f6',lm=lx+(tx-lx)*.48,rm=tx+(rx-tx)*.52,common={stroke:accent,'stroke-width':pr?Math.max(1.4,pr.sw*.72):1.5,class:'flow-branch','data-conn-id':c.id};const l=svgEl('path',{...common,d:`M${lx},${sy[c.fromId]} C${lm},${sy[c.fromId]} ${lm},${y} ${tx-102},${y}`}),r=svgEl('path',{...common,d:`M${tx+102},${y} C${rm},${y} ${rm},${ty[c.toId]} ${rx},${ty[c.toId]}`});if(pr?.dash){l.setAttribute('stroke-dasharray',pr.dash);r.setAttribute('stroke-dasharray',pr.dash)}G.append(l,r);drawTaskCardNice(G,c,i+1,tx,y,accent)});
+ const D=document.getElementById('svgD'),G=document.getElementById('svgG'),svg=document.getElementById('svgL');
+ D.innerHTML='';G.innerHTML='';
+ const allFiltered=getFilteredConnections(false),box=svg.getBoundingClientRect(),w=box.width,h=box.height;
+
+ /*
+   В схему попадают только связи, у которых одновременно видны
+   обе карточки. Благодаря этому при прокрутке не остаются
+   оборванные ветви и узлы, висящие посередине рабочей области.
+ */
+ const posCache=new Map();
+ const getPos=(id,side)=>{
+   const key=side+'|'+id;
+   if(!posCache.has(key))posCache.set(key,cardPos(id,side));
+   return posCache.get(key);
+ };
+ const cs=allFiltered.filter(c=>getPos(c.fromId,'sd')&&getPos(c.toId,'it'));
+
+ if(!cs.length){
+   if(isFilterActive()&&!allFiltered.length){
+     const t=svgEl('text',{x:w/2,y:h/2,class:'svg-empty-filter'});
+     t.textContent='У выбранного сотрудника нет активных обращений';
+     G.appendChild(t);
+   }
+   return;
+ }
+
+ const sx=Math.max(85,w*.22),tx=w*.5,rx=Math.min(w-85,w*.78),top=48,bottom=34,usable=Math.max(60,h-top-bottom);
+ const sorted=[...cs].sort((a,b)=>(getPos(a.fromId,'sd')?.y||0)-(getPos(b.fromId,'sd')?.y||0)||((getPos(a.toId,'it')?.y||0)-(getPos(b.toId,'it')?.y||0)));
+ const lane=new Map;
+ sorted.forEach((c,i)=>lane.set(c.id,sorted.length===1?h/2:top+usable*i/(sorted.length-1)));
+
+ const sg={},tg={};
+ cs.forEach(c=>{(sg[c.fromId]??=[]).push(c);(tg[c.toId]??=[]).push(c)});
+ const sy={},ty={};
+ Object.entries(sg).forEach(([id,a])=>sy[id]=a.reduce((sum,c)=>sum+lane.get(c.id),0)/a.length);
+ Object.entries(tg).forEach(([id,a])=>ty[id]=a.reduce((sum,c)=>sum+lane.get(c.id),0)/a.length);
+
+ [...new Set(cs.map(c=>c.color))].forEach(col=>{
+   const m=svgEl('marker',{id:'ar-'+col.slice(1),markerWidth:8,markerHeight:6,refX:7,refY:3,orient:'auto'}),
+         p=svgEl('polygon',{points:'0 0,8 3,0 6',fill:col});
+   m.appendChild(p);D.appendChild(m);
+ });
+
+ Object.entries(sg).forEach(([id,a])=>{
+   const p=getPos(id,'sd');
+   if(!p)return;
+   const col=a[0].color;
+   const path=svgEl('path',{
+     d:`M${p.x+3},${p.y} C${sx*.55},${p.y} ${sx*.55},${sy[id]} ${sx},${sy[id]}`,
+     stroke:col,'stroke-width':Math.min(8,2.8+a.length*.55),opacity:.55,class:'fiber-trunk'
+   });
+   G.appendChild(path);drawBundle(G,sx,sy[id],a.length,col);
+ });
+
+ Object.entries(tg).forEach(([id,a])=>{
+   const p=getPos(id,'it');
+   if(!p)return;
+   const col=a[0].color,cx=rx+(w-rx)*.45;
+   const path=svgEl('path',{
+     d:`M${rx},${ty[id]} C${cx},${ty[id]} ${cx},${p.y} ${p.x-4},${p.y}`,
+     stroke:col,'stroke-width':Math.min(8,2.8+a.length*.55),opacity:.55,class:'fiber-trunk'
+   });
+   G.appendChild(path);drawBundle(G,rx,ty[id],a.length,col);
+ });
+
+ sorted.forEach((c,i)=>{
+   const y=lane.get(c.id),pr=c.priority?PRIORITIES[c.priority]:null;
+   const attrs={stroke:c.color,'stroke-width':pr?pr.sw:2,opacity:.8,class:'fiber-branch','data-conn-id':c.id};
+   if(pr?.dash)attrs['stroke-dasharray']=pr.dash;
+   const lm=sx+(tx-sx)*.52,rm=tx+(rx-tx)*.48;
+   const l=svgEl('path',{...attrs,d:`M${sx},${sy[c.fromId]} C${lm},${sy[c.fromId]} ${lm},${y} ${tx-11},${y}`});
+   const r=svgEl('path',{...attrs,d:`M${tx+11},${y} C${rm},${y} ${rm},${ty[c.toId]} ${rx},${ty[c.toId]}`,'marker-end':`url(#ar-${c.color.slice(1)})`});
+   G.append(l,r);
+
+   const g=svgEl('g',{id:'svgTaskNode-'+c.id,class:'fiber-task-node','data-conn-id':c.id}),
+         circle=svgEl('circle',{cx:tx,cy:y,r:10,fill:c.color,stroke:'#fff','stroke-width':2,class:'fiber-task-circle'}),
+         text=svgEl('text',{x:tx,y:y+3.5,'text-anchor':'middle','font-size':9,'font-weight':700,fill:'#fff'});
+   text.textContent=i+1;g.append(circle,text);
+   const f=SD.find(p=>p.id===c.fromId),t=IT.find(p=>p.id===c.toId);
+   g.onmouseenter=e=>showTip(c,f,t,e);g.onmousemove=moveTip;g.onmouseleave=hideTip;
+   G.appendChild(g);
+ });
 }
-function drawBundleNice(G,x,y,n,side){const g=svgEl('g'),c=svgEl('circle',{cx:x,cy:y,r:n>9?13:11,class:'flow-bundle'}),t=svgEl('text',{x,y:y+3,class:'flow-bundle-count'});t.textContent=n;g.append(c,t);const l=svgEl('text',{x:x+(side==='left'?-17:17),y:y+3,'text-anchor':side==='left'?'end':'start',class:'bundle-label'});l.textContent=n===1?'1 задача':`${n} задач`;g.appendChild(l);G.appendChild(g)}
-function shortTaskText(text,max=29){const v=String(text||'Обращение').replace(/\s+/g,' ').trim();return v.length>max?v.slice(0,max-1)+'…':v}
-function drawTaskCardNice(G,c,index,x,y,accent){const f=SD.find(p=>p.id===c.fromId),t=IT.find(p=>p.id===c.toId),pr=c.priority?PRIORITIES[c.priority]:null,g=svgEl('g',{id:'svgTaskNode-'+c.id,class:'task-card-svg','data-conn-id':c.id,transform:`translate(${x-95},${y-17})`}),bg=svgEl('rect',{x:0,y:0,width:190,height:34,rx:9,class:'task-card-bg'}),stripe=svgEl('rect',{x:0,y:0,width:4,height:34,rx:2,fill:accent}),ci=svgEl('circle',{cx:17,cy:17,r:9,fill:accent}),it=svgEl('text',{x:17,y:20,'text-anchor':'middle',class:'task-card-index'});it.textContent=index;const title=svgEl('text',{x:32,y:14,class:'task-card-title'});title.textContent=shortTaskText(c.task);const meta=svgEl('text',{x:32,y:26,class:'task-card-meta'});meta.textContent=`${shortTaskText(f?.name||'',12)} → ${shortTaskText(t?.name||'',12)}`;g.append(bg,stripe,ci,it,title,meta);if(pr){const cw=34,chip=svgEl('rect',{x:149,y:7,width:cw,height:15,rx:7.5,fill:pr.bg,stroke:pr.color,'stroke-width':.7}),ct=svgEl('text',{x:166,y:17.5,'text-anchor':'middle',fill:pr.color,class:'task-card-prio'});ct.textContent=pr.short;g.append(chip,ct)}g.onmouseenter=e=>showTip(c,f,t,e);g.onmousemove=moveTip;g.onmouseleave=hideTip;G.appendChild(g)}
-function highlightLine(id,on){document.querySelectorAll(`[data-conn-id="${id}"]`).forEach(e=>e.classList.toggle('flow-active',on));const bg=document.querySelector(`#svgTaskNode-${id} .task-card-bg`);if(bg){bg.setAttribute('stroke',on?'#3b82f6':'#dbe5ef');bg.setAttribute('stroke-width',on?'2':'1.2')}}
+function drawBundle(G,x,y,n,col){const g=svgEl('g'),c=svgEl('circle',{cx:x,cy:y,r:n>9?14:12,fill:'#fff',stroke:col,'stroke-width':3,class:'fiber-bundle-circle'}),t=svgEl('text',{x,y:y+3.5,'text-anchor':'middle','font-size':n>99?7:9,'font-weight':700,fill:col});t.textContent=n;g.append(c,t);G.appendChild(g)}
+function highlightLine(id,on){document.querySelectorAll(`[data-conn-id="${id}"]`).forEach(e=>e.classList.toggle('fiber-hover',on));const c=document.querySelector(`#svgTaskNode-${id} circle`);if(c)c.setAttribute('r',on?13:10)}
 function showTip(c,f,t,e){if(!f||!t)return;const pr=c.priority?PRIORITIES[c.priority]:null,tip=document.getElementById('svgTip');tip.innerHTML=`<div class="st-from">${esc(f.name)}</div><div class="st-team">${esc(teamOf(f.teamId,'sd').name)}</div><div class="st-arr">↓ обращение к</div><div class="st-to">${esc(t.name)}</div><div class="st-role">${esc(t.role)}</div><div class="st-task">${esc(c.task)}</div>${pr?`<div style="margin-top:7px"><span style="background:${pr.color};padding:2px 9px;border-radius:10px;font-size:10px">${pr.label}</span></div>`:''}`;tip.classList.add('show');moveTip(e);document.getElementById('trow-'+c.id)?.classList.add('hl');highlightLine(c.id,true)}
 function moveTip(e){const t=document.getElementById('svgTip');let x=e.clientX+14,y=e.clientY-10;if(x+t.offsetWidth>innerWidth-10)x=e.clientX-t.offsetWidth-14;if(y+t.offsetHeight>innerHeight-10)y=e.clientY-t.offsetHeight-10;t.style.left=x+'px';t.style.top=y+'px'}
-function hideTip(){document.getElementById('svgTip').classList.remove('show');document.querySelectorAll('.trow.hl').forEach(r=>r.classList.remove('hl'));document.querySelectorAll('.fiber-hover').forEach(e=>e.classList.remove('fiber-hover'));}
+function hideTip(){document.getElementById('svgTip').classList.remove('show');document.querySelectorAll('.trow.hl').forEach(r=>r.classList.remove('hl'));document.querySelectorAll('.fiber-hover').forEach(e=>e.classList.remove('fiber-hover'));document.querySelectorAll('.fiber-task-circle').forEach(c=>c.setAttribute('r',10))}
 
 function exportExcel(){if(!conns.length)return toast('⚠ Нет данных');const wb=XLSX.utils.book_new(),rows=conns.map((c,i)=>{const f=SD.find(p=>p.id===c.fromId),t=IT.find(p=>p.id===c.toId),pr=c.priority?PRIORITIES[c.priority]:null;return{'№':i+1,'От кого':f?.name||'','Команда SD':teamOf(f?.teamId,'sd').name,'Кому IT':t?.name||'','Роль IT':t?.role||'','Задача':c.task,'Тип':pr?.label||'','Статус':c.done?'Выполнено':'Активно','Дата выполнения':c.doneAt?new Date(c.doneAt).toLocaleDateString('ru-RU'):''}}),ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=[{wch:4},{wch:22},{wch:20},{wch:22},{wch:22},{wch:45},{wch:22},{wch:12},{wch:16}];XLSX.utils.book_append_sheet(wb,ws,'Обращения');XLSX.writeFile(wb,`IT_Workload_${new Date().toISOString().slice(0,10)}.xlsx`);}
 function closeModal(id){document.getElementById(id).classList.remove('show')}function showSetupModal(){document.getElementById('modalSetup').classList.add('show')}
